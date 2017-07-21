@@ -362,10 +362,25 @@ open class WebAppLocalServer: METPlugin, AssetBundleManagerDelegate {
     addHandlerForWwwDirectory()
     addHandlerForAssetBundle()
 
-    let options = [
-      GCDWebServerOption_Port: NSNumber(value: localServerPort as UInt),
-      GCDWebServerOption_BindToLocalhost: true]
-    try localServer.start(options: options)
+    //let options = [
+    //  GCDWebServerOption_Port: NSNumber(value: localServerPort as UInt),
+    //  GCDWebServerOption_BindToLocalhost: true]
+    //try localServer.start(options: options)
+    repeat {
+      let options = [
+        GCDWebServerOption_Port: NSNumber(value: localServerPort as UInt),
+        GCDWebServerOption_BindToLocalhost: true]
+      do {
+        try localServer.start(options: options)
+      } catch {
+        NSLog("start local server failed: port=\(localServerPort)")
+        localServerPort = UInt(generateRandomNumber(min: 12416, max: 52416))
+        NSLog("try another port \(localServerPort)")
+        continue
+      }
+      NSLog("start local server successfully: port=\(localServerPort)")
+      break;
+    } while (true)
 
     // Set localServerPort to the assigned port, in case it is different
     localServerPort = localServer.port
