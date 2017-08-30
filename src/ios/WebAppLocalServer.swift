@@ -394,6 +394,30 @@ open class WebAppLocalServer: METPlugin, AssetBundleManagerDelegate {
       // Do not modify startPage if we are testing the app using
       // cordova-plugin-test-framework
       viewController.startPage = "http://localhost:\(localServerPort)?\(authTokenKeyValuePair)"
+      
+      let defaults = UserDefaults.standard;
+        var lastStartPage: String!
+        if((defaults.value(forKey: "localServerPort")) != nil){
+            let lastPort: UInt = defaults.value(forKey: "localServerPort") as! UInt
+            let lastToken: String = defaults.value(forKey: "authTokenKeyValuePair") as! String
+            lastStartPage = "http://localhost:\(lastPort)?\(lastToken)"
+        }
+      
+      defaults.setValue(localServerPort, forKey: "localServerPort")
+      defaults.setValue(authTokenKeyValuePair, forKey: "authTokenKeyValuePair")
+      
+      if (viewController.webView != nil && lastStartPage != nil && viewController.startPage !=  lastStartPage ) {
+            NSLog("local server port change to \(localServerPort)")
+            //viewController.viewDidLoad()
+        let url = NSURL.init(string: viewController.startPage)
+        let request = URLRequest.init(url: url! as URL, cachePolicy: URLRequest.CachePolicy.useProtocolCachePolicy, timeoutInterval: 20.0)
+            viewController.webViewEngine.load(request)
+        defaults.setValue("true", forKey: "webReloaded")
+        
+       }
+       defaults.synchronize()
+        
+        
     }
   }
 
