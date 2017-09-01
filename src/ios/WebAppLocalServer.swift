@@ -8,7 +8,7 @@ let GCDWebServerRequestAttribute_FilePath = "GCDWebServerRequestAttribute_FilePa
 let localFileSystemPath = "/local-filesystem"
 
 @objc(METWebAppLocalServer)
-open class WebAppLocalServer: METPlugin, AssetBundleManagerDelegate {
+open class WebAppLocalServer: METPlugin, AssetBundleManagerDelegate ,GCDWebServerDelegate{
   /// The local web server responsible for serving assets to the web app
   private(set) var localServer: GCDWebServer!
 
@@ -357,6 +357,7 @@ open class WebAppLocalServer: METPlugin, AssetBundleManagerDelegate {
 
   func startLocalServer() throws {
     localServer = GCDWebServer()
+    localServer.delegate = self
     // setLogLevel for some reason expects an int instead of an enum
     GCDWebServer.setLogLevel(GCDWebServerLoggingLevel.info.rawValue)
 
@@ -409,18 +410,27 @@ open class WebAppLocalServer: METPlugin, AssetBundleManagerDelegate {
       if (viewController.webView != nil && lastStartPage != nil && viewController.startPage !=  lastStartPage ) {
             NSLog("local server port change to \(localServerPort)")
             //viewController.viewDidLoad()
-        let url = NSURL.init(string: viewController.startPage)
-        let request = URLRequest.init(url: url! as URL, cachePolicy: URLRequest.CachePolicy.useProtocolCachePolicy, timeoutInterval: 20.0)
-            viewController.webViewEngine.load(request)
-        defaults.setValue("true", forKey: "webReloaded")
+//        let url = NSURL.init(string: viewController.startPage)
+//        let request = URLRequest.init(url: url! as URL, cachePolicy: URLRequest.CachePolicy.useProtocolCachePolicy, timeoutInterval: 20.0)
+//            viewController.webViewEngine.load(request)
+//        defaults.setValue("true", forKey: "webReloaded")
         
        }
        defaults.synchronize()
         
-        
     }
   }
 
+  public func webServerDidStart(_ server: GCDWebServer){
+    NSLog("GCDWebServer start successfully")
+    //        forceReload();
+    if let webView = self.webView as? WKWebView {
+        //            webView.reloadFromOrigin()
+        webView.reload()
+    }
+    
+  }
+    
   // MARK: Request Handlers
 
   private func addHandlerForAssetBundle() {
