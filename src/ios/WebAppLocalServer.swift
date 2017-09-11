@@ -423,11 +423,11 @@ open class WebAppLocalServer: METPlugin, AssetBundleManagerDelegate ,GCDWebServe
 
   public func webServerDidStart(_ server: GCDWebServer){
     NSLog("GCDWebServer start successfully")
-    //        forceReload();
-    if let webView = self.webView as? WKWebView {
-        //            webView.reloadFromOrigin()
-        webView.reload()
-    }
+    //forceReload();
+    //if let webView = self.webView as? WKWebView {
+        //webView.reloadFromOrigin()
+        //webView.reload()
+    //}
     
   }
     
